@@ -24,5 +24,22 @@ const userSchema = new Schema(
             }
         ]
                     
+    },
+    {
+        toJSON: {
+            virtuals: true,
+        },
+        id: false,
     }
-)
+);
+// This creates a virtual called "friendCount" to gets the number of friends for each User
+userSchema.virtual('friendCount')
+.get(function () {
+    return this.friends.length;
+})
+
+//Initialize the User model
+
+const User = model('user', userSchema);
+
+module.exports = User;
