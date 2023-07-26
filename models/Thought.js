@@ -1,5 +1,5 @@
 const { Schema, model } = require('mongoose');
-const reaction = require('./Reaction');
+const Reaction = require('./Reaction');
 
 //Schema used to create the Thought model 
 const thoughtSchema = new Schema(
@@ -18,9 +18,15 @@ const thoughtSchema = new Schema(
                     required: true,
                   },
         
-        reactions: [reaction]
+        reactions: [Reaction],
                     
     },
+    {
+        toJSON: {
+            virtuals: true,
+    },
+        id: false,
+    }
 
 );
 // This creates a virtual called "reactionCount" to gets the number of reactions for each Thought

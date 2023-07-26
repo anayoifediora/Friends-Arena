@@ -4,7 +4,7 @@ const router = require('express').Router();
 // GET all thoughts
 router.get('/', async (req, res) => {
     try {
-        const thoughtData = await Thought.find().populate('reactions');
+        const thoughtData = await Thought.find().populate('reactions').select('-__v');
         res.status(200).json(thoughtData);
     } catch (err) {
         res.status(500).json(err);
@@ -14,7 +14,9 @@ router.get('/', async (req, res) => {
 // GET a single thought by its _id
 router.get('/:thoughtId', async (req, res) => {
     try {
-        const thoughtData = await Thought.findOne({ _id: req.params.id }).populate('reactions');
+        const thoughtData = await Thought.findOne({ _id: req.params.thoughtId })
+        .populate('reactions')
+        .select('-__v');
 
         if (!thoughtData) {
             return res.status(404).json({ message: 'No thought found with this id!' });
@@ -57,7 +59,7 @@ router.post('/:thoughtId/reactions', async (req, res) => {
             { $addToSet: { reactions: reactionData._id } },
             { runValidators: true, new: true }
         );
-
+            
         if (!thoughtData) {
             return res.status(404).json({ message: 'No thought found with this id!' });
         }
@@ -74,7 +76,7 @@ router.put('/:thoughtId', async (req, res) => {
     try {
         const thoughtData = await Thought.findOneAndUpdate(
             { _id: req.params.thoughtId },
-            req.body,
+            { $set: req.body },
             { runValidators: true, new: true }
         );
 

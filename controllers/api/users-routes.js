@@ -1,10 +1,10 @@
-const { Reaction, User } = require('../../models');
+const { Reaction, User, Thought } = require('../../models');
 const router = require('express').Router();
 
 // GET all users
 router.get('/', async (req, res) => {
     try {
-        const userData = await User.find().populate('thoughts').populate('friends');
+        const userData = await User.find().select('-__v');
         res.status(200).json(userData);
     } catch (err) {
         res.status(500).json(err);
@@ -16,8 +16,6 @@ router.get('/:userId', async (req, res) => {
 
     try {
         const userData = await User.findOne({ _id: req.params.userId })
-        .populate('thoughts')
-        .populate('friends')
         .select('-__v');
 
         if (!userData) {
@@ -44,9 +42,15 @@ router.post('/', async (req, res) => {
 router.put('/:userId', async (req, res) => {
     try {
         const userData = await User.findOneAndUpdate(
-            {_id: req.params.userId},
-            {$set: {username: req.body.username}},
-            {runValidators: true, new: true});
+            { _id: req.params.userId },
+            { $set: req.body },
+            { runValidators: true, new: true });
+       
+             if (!userData) {
+            return res.status(404).json({ message: 'No user found with this id!' });
+            }
+        res.status(200).json({ message: 'User updated!' });
+        
     } catch (err) {
         res.status(500).json(err);
     }
@@ -83,7 +87,7 @@ router.post('/:userId/friends/:friendId', async (req, res) => {
             return res.status(404).json({ message: 'No user found with this id!' });
         }
         res.json('Friend added!');
-        res.status(200).json(userData);
+        // res.status(200).json(userData);
     } catch (err) {
         res.status(500).json(err);
     }
@@ -102,7 +106,7 @@ router.delete('/:userId/friends/:friendId', async (req, res) => {
             return res.json({ message: 'No user found with this id!' });
         }
         res.json('Friend deleted!');
-        res.status(200).json(userData);
+        // res.status(200).json(userData);
     
     } catch (err) {
         res.status(500).json(err);

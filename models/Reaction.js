@@ -21,9 +21,9 @@ const reactionSchema = new Schema(
             type: Date,
             default: Date.now,
             get: (date) => {return date.toDateString(date)},
-        }
-    }
+        },
+    },
 );
 
-
 module.exports = reactionSchema;
+
