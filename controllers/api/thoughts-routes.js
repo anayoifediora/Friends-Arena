@@ -52,7 +52,6 @@ router.post('/', async (req, res) => {
 router.post('/:thoughtId/reactions', async (req, res) => {
 
     try {
-        // const reactionData = await Reaction.create(req.body);
         const thoughtData = await Thought.findOneAndUpdate(
             { _id: req.params.thoughtId },
             { $addToSet: { reactions: req.body } },
