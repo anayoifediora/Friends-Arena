@@ -41,7 +41,6 @@ router.post('/', async (req, res) => {
         if (!userData) {
             return res.status(404).json({ message: 'No user found with this id!' });
         }
-        res.json('Thought created!');
         res.status(200).json(thoughtData);
     } catch (err) {
         res.status(500).json(err);
@@ -53,10 +52,10 @@ router.post('/', async (req, res) => {
 router.post('/:thoughtId/reactions', async (req, res) => {
 
     try {
-        const reactionData = await Reaction.create(req.body);
+        // const reactionData = await Reaction.create(req.body);
         const thoughtData = await Thought.findOneAndUpdate(
             { _id: req.params.thoughtId },
-            { $addToSet: { reactions: reactionData._id } },
+            { $addToSet: { reactions: req.body } },
             { runValidators: true, new: true }
         );
             
@@ -68,6 +67,27 @@ router.post('/:thoughtId/reactions', async (req, res) => {
         res.status(500).json(err);
     }
 });
+
+// DELETE a reaction by the reaction's reactionId value
+
+router.delete('/:thoughtId/reactions/:reactionId', async (req, res) => {
+    
+        try {
+            const thoughtData = await Thought.findOneAndUpdate(
+                { _id: req.params.thoughtId },
+                { $pull: { reactions: { reactionId: req.params.reactionId } } },
+                { runValidators: true, new: true }
+            );
+    
+            if (!thoughtData) {
+                return res.status(404).json({ message: 'No thought found with this id!' });
+            }
+            res.json('Reaction deleted!');
+        } catch (err) {
+            res.status(500).json(err);
+        }
+});
+
 
 // UPDATE a thought by its _id 
 
